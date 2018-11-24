@@ -1,0 +1,418 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>iterator &#8212; iterator 0.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Welcome to iterator’s documentation!" href="../index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-iterator">
+<span id="iterator"></span><h1><code class="docutils literal notranslate"><span class="pre">iterator</span></code><a class="headerlink" href="#module-iterator" title="Permalink to this headline">¶</a></h1>
+<p>A lazy iterator type inspired by Rust’s iterator types.</p>
+<p>You can extend your own types to use this iterator interface by inheriting
+from the Iterator class and overriding the __next__ method.</p>
+<p>You can also use the <cite>into_iter</cite> function, which accepts any Python iterable
+and returns an Iterator.</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#functions" id="id1">Functions</a></li>
+<li><a class="reference internal" href="#classes" id="id2">Classes</a></li>
+</ul>
+</div>
+<div class="section" id="functions">
+<h2><a class="toc-backref" href="#id1">Functions</a><a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="#iterator.into_iter" title="iterator.into_iter"><code class="xref py py-func docutils literal notranslate"><span class="pre">into_iter()</span></code></a>:
+Creates an Iterator from the iterable.</li>
+</ul>
+<dl class="function">
+<dt id="iterator.into_iter">
+<code class="descclassname">iterator.</code><code class="descname">into_iter</code><span class="sig-paren">(</span><em>iterable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#into_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.into_iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an Iterator from the iterable.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="classes">
+<h2><a class="toc-backref" href="#id2">Classes</a><a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="#iterator.Iterator" title="iterator.Iterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>:
+A lazy iterator type inspired by Rust iterators.</li>
+</ul>
+<dl class="class">
+<dt id="iterator.Iterator">
+<em class="property">class </em><code class="descclassname">iterator.</code><code class="descname">Iterator</code><a class="reference internal" href="../_modules/iterator.html#Iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>A lazy iterator type inspired by Rust iterators.</p>
+<p class="rubric">Inheritance</p>
+digraph inheritancea6c194cd25 {
+rankdir=LR;
+size=&quot;8.0, 12.0&quot;;
+  &quot;Iterator&quot; [URL=&quot;#iterator.Iterator&quot;,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5)&quot;,target=&quot;_top&quot;,tooltip=&quot;A lazy iterator type inspired by Rust iterators.&quot;];
+}
+<dl class="method">
+<dt id="iterator.Iterator.all">
+<code class="descname">all</code><span class="sig-paren">(</span><em>pred</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if all elements satisfy the predicate.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.any">
+<code class="descname">any</code><span class="sig-paren">(</span><em>pred</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.any"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.any" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if any of the elements satisfy the predicate.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.chain">
+<code class="descname">chain</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.chain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.chain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a stream of values from <cite>self</cite>, then from <cite>other</cite>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.collect">
+<code class="descname">collect</code><span class="sig-paren">(</span><em>collector</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.collect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.collect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use collector to collect the elements of the iterator.
+It can be useful to pass a constructor here, to create a
+collection out of the iterator.</p>
+<p>Examples:</p>
+<blockquote>
+<div><cite>iter.collect(lambda xs: [x for x in xs])</cite></div></blockquote>
+<p>to collect the results into a list</p>
+<blockquote>
+<div><cite>iter.collect(lambda xs: { x[0] : x[1] for x in xs })</cite></div></blockquote>
+<p>to collect stream of pairs into dictionary.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>class MyList:</dt>
+<dd><dl class="first last docutils">
+<dt>def __init__(self, stream):</dt>
+<dd>self.items = [ i for i in stream ]</dd>
+</dl>
+</dd>
+</dl>
+<p>iter.collect(MyList)</p>
+</div></blockquote>
+<p>to collect of items into my custom list type.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.count">
+<code class="descname">count</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.count"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Consume the iterator, counting the number of iterations and returning it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.cycle">
+<code class="descname">cycle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.cycle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.cycle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Repeat this iterator endlessly.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.enumerate">
+<code class="descname">enumerate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.enumerate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.enumerate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enumerate the stream, via the Python builtin.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.filter">
+<code class="descname">filter</code><span class="sig-paren">(</span><em>pred</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a stream of values for which the predicate is true.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.filter_map">
+<code class="descname">filter_map</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.filter_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.filter_map" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>op</cite> should return <cite>(bool, item)</cite>. If bool is false, skips item.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.find">
+<code class="descname">find</code><span class="sig-paren">(</span><em>pred</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.find"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the first item that satisfies the predicate.
+Raise <cite>LookupError</cite> if not found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.flat_map">
+<code class="descname">flat_map</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.flat_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.flat_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Where <cite>op</cite> returns a stream of items, apply <cite>op</cite> to each element
+of the iterator and flatten the resulting nested structure.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.flatten">
+<code class="descname">flatten</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.flatten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.flatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flatten nested structure.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.fold">
+<code class="descname">fold</code><span class="sig-paren">(</span><em>state</em>, <em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.fold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.fold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduce the iterator into a single value, by way of <cite>state = op(state, item)</cite>
+for each element in the iterator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.inspect">
+<code class="descname">inspect</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.inspect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.inspect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do something with each element of an iterator. Different to <cite>map</cite>; <cite>map</cite>
+essentially does</p>
+<blockquote>
+<div>[ f(x) for x in xs ]</div></blockquote>
+<p>Compare to this method, which essentially does</p>
+<blockquote>
+<div>[ (f(x), x)[1] for x in xs ]</div></blockquote>
+<p>In other words, <cite>map</cite> applies a function to each element of the iterator
+and returns the <em>result</em>, <cite>inspect</cite> applies a function to each element of
+the iterator and returns <em>the element</em>.</p>
+<p>This can be useful e.g for logging errors before filtering them out.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>def log_if_bad(egg):</dt>
+<dd><dl class="first last docutils">
+<dt>if egg.is_bad():</dt>
+<dd>print(“bad egg will be removed”)</dd>
+<dt>else:</dt>
+<dd>pass</dd>
+</dl>
+</dd>
+</dl>
+<p>my_iter            .map(lambda x: some_operation(x))            .inspect(lambda e: log_if_bad(e))            .filter(lambda e: not e.is_bad())</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.last">
+<code class="descname">last</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.last"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.last" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the last item in the iterator. Return None if the iterator is empty.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.map">
+<code class="descname">map</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a stream of <cite>op</cite> applied to each element.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.max">
+<code class="descname">max</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the maximum element in the stream.
+If there are many maxima, returns the first one.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.max_by">
+<code class="descname">max_by</code><span class="sig-paren">(</span><em>comp</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.max_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.max_by" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>comp(a, b)</cite> should return <cite>True</cite> if a is greater than b.
+Return the maximum element in the stream according to the comparison function
+given.
+If there are many maxima, returns the first one.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.max_by_score">
+<code class="descname">max_by_score</code><span class="sig-paren">(</span><em>score</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.max_by_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.max_by_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the element with the highest score according to <cite>score</cite>.
+If there are many minima, returns the first one.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.min">
+<code class="descname">min</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.min"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the minimum element in the stream.
+If there are many minima, return the first one.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.min_by">
+<code class="descname">min_by</code><span class="sig-paren">(</span><em>comp</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.min_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.min_by" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>comp(a, b)</cite> should return <cite>True</cite> if a is less than b.
+Return the minimum element in the stream according to the comparison function
+given.
+If there are many minima, returns the first one.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.min_by_score">
+<code class="descname">min_by_score</code><span class="sig-paren">(</span><em>score</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.min_by_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.min_by_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the element with the lowest score according to <cite>score</cite>.
+If there are many minima, returns the first one.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.none">
+<code class="descname">none</code><span class="sig-paren">(</span><em>pred</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.none"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.none" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if none of the elements satisfy the predicate.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.partition">
+<code class="descname">partition</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.partition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Consume the iterater, splitting the elements into two lists based
+on whether or not they satisfy the predicate.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.partition_map">
+<code class="descname">partition_map</code><span class="sig-paren">(</span><em>pred</em>, <em>op_t</em>, <em>op_f=&lt;function Iterator.&lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.partition_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.partition_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies <cite>pred</cite> to each element in the stream. If the result is true,
+then apply <cite>op_t</cite>, otherwise, apply <cite>op_f</cite>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.peekable">
+<code class="descname">peekable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.peekable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.peekable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator with an additional method, <cite>peek</cite>, which can get the
+the next element in the stream without advancing the iterator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.position">
+<code class="descname">position</code><span class="sig-paren">(</span><em>pred</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the position of the first item that satisfies the predicate.
+Raise <cite>LookupError</cite> if not found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.product">
+<code class="descname">product</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.product"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the product of all elements in the iterator.
+Raise StopIteration if the iterator is empty.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.skip_while">
+<code class="descname">skip_while</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.skip_while"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.skip_while" title="Permalink to this definition">¶</a></dt>
+<dd><p>Skip elements while predicate is true.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.sum">
+<code class="descname">sum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.sum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum the elements of the iterator.
+Raise StopIteration if the iterator is empty.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.take_while">
+<code class="descname">take_while</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.take_while"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.take_while" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take elements until predicate is false.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.unzip">
+<code class="descname">unzip</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.unzip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.unzip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split a stream of pairs into a pair of streams</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="iterator.Iterator.zip">
+<code class="descname">zip</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.zip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.zip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a stream of pairs from a pair of streams.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">iterator</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">iterator</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#classes">Classes</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../index.html" title="previous chapter">Welcome to iterator’s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Antony Southworth.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/iterator/iterator.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
