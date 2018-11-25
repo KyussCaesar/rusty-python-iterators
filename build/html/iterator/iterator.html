@@ -16,7 +16,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Welcome to iterator’s documentation!" href="../index.html" />
+    <link rel="prev" title="iterator: Rust-inspired iteration" href="../index.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -37,17 +37,64 @@
 <span id="iterator"></span><h1><code class="docutils literal notranslate"><span class="pre">iterator</span></code><a class="headerlink" href="#module-iterator" title="Permalink to this headline">¶</a></h1>
 <p>A lazy iterator type inspired by Rust’s iterator types.</p>
 <p>You can extend your own types to use this iterator interface by inheriting
-from the Iterator class and overriding the __next__ method.</p>
-<p>You can also use the <cite>into_iter</cite> function, which accepts any Python iterable
+and overriding the __next__ method.</p>
+<p>You can also use the <code class="docutils literal notranslate"><span class="pre">into_iter</span></code> function, which accepts any Python iterable
 and returns an Iterator.</p>
-<div class="contents local topic" id="contents">
-<ul class="simple">
-<li><a class="reference internal" href="#functions" id="id1">Functions</a></li>
-<li><a class="reference internal" href="#classes" id="id2">Classes</a></li>
-</ul>
+<div class="section" id="basic-usage">
+<h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<p>If you already have something that’s iterable, use the <code class="docutils literal notranslate"><span class="pre">into_iter</span></code> function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">iter</span> <span class="o">=</span> <span class="n">into_iter</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>It accepts any kind of iterable, so all of the following will work:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">iter</span> <span class="o">=</span> <span class="n">into_iter</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xs</span><span class="p">])</span> <span class="c1"># list comprehension</span>
+<span class="nb">iter</span> <span class="o">=</span> <span class="n">into_iter</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xs</span><span class="p">)</span>   <span class="c1"># generator expression</span>
+<span class="nb">iter</span> <span class="o">=</span> <span class="n">into_iter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>       <span class="c1"># generator</span>
+<span class="nb">iter</span> <span class="o">=</span> <span class="n">into_iter</span><span class="p">(</span><span class="n">my_list</span><span class="p">)</span>         <span class="c1"># list</span>
+</pre></div>
+</div>
+<p>In order to collect the results back into a list, use <a class="reference internal" href="#iterator.Iterator.collect" title="iterator.Iterator.collect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">collect()</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">assert</span> <span class="n">into_iter</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="iterator-methods">
+<h3>Iterator methods<a class="headerlink" href="#iterator-methods" title="Permalink to this headline">¶</a></h3>
+<p>Perhaps the most used methods are <a class="reference internal" href="#iterator.Iterator.map" title="iterator.Iterator.map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map()</span></code></a> and
+<a class="reference internal" href="#iterator.Iterator.filter" title="iterator.Iterator.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">filter()</span></code></a>. See below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">into_iter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>\
+<span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>\
+<span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">)</span>\
+<span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+
+<span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#iterator.Iterator.map" title="iterator.Iterator.map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map()</span></code></a> yields the result of applying the function to each
+element, and <a class="reference internal" href="#iterator.Iterator.filter" title="iterator.Iterator.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">filter()</span></code></a> only yields items for which the
+function returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>There’s also <a class="reference internal" href="#iterator.Iterator.collect" title="iterator.Iterator.collect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">collect()</span></code></a> which collects the elements of the
+iterator into (by default) a list, but can also be provided with a function to
+collect into.</p>
+<p>For example, collecting into a dict:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">into_iter</span><span class="p">(</span><span class="s2">&quot;abc&quot;</span><span class="p">)</span>\
+    <span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>\
+    <span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Or:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;my_data.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">into_iter</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>\
+        <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">some_operation</span><span class="p">)</span>\
+        <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">stuff_wanted</span><span class="p">)</span>\
+        <span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="functions">
-<h2><a class="toc-backref" href="#id1">Functions</a><a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference internal" href="#iterator.into_iter" title="iterator.into_iter"><code class="xref py py-func docutils literal notranslate"><span class="pre">into_iter()</span></code></a>:
 Creates an Iterator from the iterable.</li>
@@ -60,7 +107,7 @@ Creates an Iterator from the iterable.</li>
 
 </div>
 <div class="section" id="classes">
-<h2><a class="toc-backref" href="#id2">Classes</a><a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference internal" href="#iterator.Iterator" title="iterator.Iterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>:
 A lazy iterator type inspired by Rust iterators.</li>
@@ -69,54 +116,55 @@ A lazy iterator type inspired by Rust iterators.</li>
 <dt id="iterator.Iterator">
 <em class="property">class </em><code class="descclassname">iterator.</code><code class="descname">Iterator</code><a class="reference internal" href="../_modules/iterator.html#Iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>A lazy iterator type inspired by Rust iterators.</p>
+<p>See the module-level documentation for more information.</p>
 <p class="rubric">Inheritance</p>
-digraph inheritancea6c194cd25 {
-rankdir=LR;
-size=&quot;8.0, 12.0&quot;;
-  &quot;Iterator&quot; [URL=&quot;#iterator.Iterator&quot;,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5)&quot;,target=&quot;_top&quot;,tooltip=&quot;A lazy iterator type inspired by Rust iterators.&quot;];
-}
-<dl class="method">
+<div class="graphviz"><img src="../_images/inheritance-5ab9851317b6fe8b2d2e477940fd9488d99d716c.png" alt="Inheritance diagram of Iterator" usemap="#inheritancea6c194cd25" class="inheritance graphviz" /></div>
+<map id="inheritancea6c194cd25" name="inheritancea6c194cd25">
+<area shape="rect" id="node1" href="#iterator.Iterator" target="_top" title="A lazy iterator type inspired by Rust iterators." alt="" coords="5,5,77,31"/>
+</map><dl class="method">
 <dt id="iterator.Iterator.all">
-<code class="descname">all</code><span class="sig-paren">(</span><em>pred</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.all" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return true if all elements satisfy the predicate.</p>
+<code class="descname">all</code><span class="sig-paren">(</span><em>pred=&lt;function Iterator.&lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if all elements satisfy the predicate.
+Predicate defaults to the identity.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="iterator.Iterator.any">
-<code class="descname">any</code><span class="sig-paren">(</span><em>pred</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.any"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.any" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return true if any of the elements satisfy the predicate.</p>
+<code class="descname">any</code><span class="sig-paren">(</span><em>pred=&lt;function Iterator.&lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.any"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.any" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if any of the elements satisfy the predicate.
+Predicate defaults to the identity.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="iterator.Iterator.chain">
 <code class="descname">chain</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.chain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.chain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a stream of values from <cite>self</cite>, then from <cite>other</cite>.</p>
+<dd><p>When the elements in the iterator are exhausted, starts yielding elements
+from <code class="docutils literal notranslate"><span class="pre">other</span></code>, chaining them together.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="iterator.Iterator.collect">
-<code class="descname">collect</code><span class="sig-paren">(</span><em>collector</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.collect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.collect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use collector to collect the elements of the iterator.
-It can be useful to pass a constructor here, to create a
+<code class="descname">collect</code><span class="sig-paren">(</span><em>collector=&lt;function Iterator.&lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.collect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.collect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <code class="docutils literal notranslate"><span class="pre">collector</span></code> to collect the elements of the iterator. Defaults to a
+list.</p>
+<p>It can be useful to pass a constructor here, to create a
 collection out of the iterator.</p>
 <p>Examples:</p>
-<blockquote>
-<div><cite>iter.collect(lambda xs: [x for x in xs])</cite></div></blockquote>
-<p>to collect the results into a list</p>
-<blockquote>
-<div><cite>iter.collect(lambda xs: { x[0] : x[1] for x in xs })</cite></div></blockquote>
-<p>to collect stream of pairs into dictionary.</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>class MyList:</dt>
-<dd><dl class="first last docutils">
-<dt>def __init__(self, stream):</dt>
-<dd>self.items = [ i for i in stream ]</dd>
-</dl>
-</dd>
-</dl>
-<p>iter.collect(MyList)</p>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`iter.collect(lambda xs: [x for x in xs])`
+</pre></div>
+</div>
+<p>to collect the results into a list:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`iter.collect(lambda xs: { x[0] : x[1] for x in xs })`
+</pre></div>
+</div>
+<p>to collect stream of pairs into dictionary:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyList</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">items</span> <span class="o">=</span> <span class="p">[</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">stream</span> <span class="p">]</span>
+
+<span class="nb">iter</span><span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="n">MyList</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>to collect of items into my custom list type.</p>
 </dd></dl>
 
@@ -124,6 +172,19 @@ collection out of the iterator.</p>
 <dt id="iterator.Iterator.count">
 <code class="descname">count</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.count"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.count" title="Permalink to this definition">¶</a></dt>
 <dd><p>Consume the iterator, counting the number of iterations and returning it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the number of items in the iterator.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function will not return if your iterator is infinite (e.g created
+by <a class="reference internal" href="#iterator.Iterator.cycle" title="iterator.Iterator.cycle"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cycle()</span></code></a> or a generator which never exits).</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -141,13 +202,46 @@ collection out of the iterator.</p>
 <dl class="method">
 <dt id="iterator.Iterator.filter">
 <code class="descname">filter</code><span class="sig-paren">(</span><em>pred</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.filter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a stream of values for which the predicate is true.</p>
+<dd><p>Applies the predicate <code class="docutils literal notranslate"><span class="pre">pred</span></code> to each element in the iterator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pred</strong> (<em>fn</em><em>(</em><em>A</em><em>)</em><em>-&gt;bool</em>) – a function which returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the item</td>
+</tr>
+</tbody>
+</table>
+<p>should be kept.
+:return: a stream of values for which the predicate is true.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="iterator.Iterator.filter_map">
 <code class="descname">filter_map</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.filter_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.filter_map" title="Permalink to this definition">¶</a></dt>
-<dd><p><cite>op</cite> should return <cite>(bool, item)</cite>. If bool is false, skips item.</p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>op</strong> (<em>func</em>) – each element in the iterator will be passed to this function.</td>
+</tr>
+</tbody>
+</table>
+<p>If the function raises <a href="#id1"><span class="problematic" id="id2">:exception:`ValueError`</span></a>, then the element will be
+filtered out. Otherwise, yield the result of the function.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_op</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">into_iter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>\
+<span class="o">.</span><span class="n">filter_map</span><span class="p">(</span><span class="n">my_op</span><span class="p">)</span>\
+<span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+
+<span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -160,14 +254,17 @@ Raise <cite>LookupError</cite> if not found.</p>
 <dl class="method">
 <dt id="iterator.Iterator.flat_map">
 <code class="descname">flat_map</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.flat_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.flat_map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Where <cite>op</cite> returns a stream of items, apply <cite>op</cite> to each element
-of the iterator and flatten the resulting nested structure.</p>
+<dd><p>Applies <a class="reference internal" href="#iterator.Iterator.map" title="iterator.Iterator.map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map()</span></code></a> followed by <a class="reference internal" href="#iterator.Iterator.flatten" title="iterator.Iterator.flatten"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatten()</span></code></a>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="iterator.Iterator.flatten">
 <code class="descname">flatten</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.flatten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.flatten" title="Permalink to this definition">¶</a></dt>
-<dd><p>Flatten nested structure.</p>
+<dd><p>Transform an iterator of iterables into one long iterator.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">assert</span> <span class="n">into_iter</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -181,41 +278,67 @@ for each element in the iterator.</p>
 <dt id="iterator.Iterator.inspect">
 <code class="descname">inspect</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.inspect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.inspect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Do something with each element of an iterator. Different to <cite>map</cite>; <cite>map</cite>
-essentially does</p>
-<blockquote>
-<div>[ f(x) for x in xs ]</div></blockquote>
-<p>Compare to this method, which essentially does</p>
-<blockquote>
-<div>[ (f(x), x)[1] for x in xs ]</div></blockquote>
-<p>In other words, <cite>map</cite> applies a function to each element of the iterator
-and returns the <em>result</em>, <cite>inspect</cite> applies a function to each element of
+essentially does:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xs</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>Compare to this method, which essentially does:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">x</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xs</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>In other words, <a class="reference internal" href="#iterator.Iterator.map" title="iterator.Iterator.map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map()</span></code></a> applies a function to each element of the iterator
+and returns the <em>result</em>, <a class="reference internal" href="#iterator.Iterator.inspect" title="iterator.Iterator.inspect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">inspect()</span></code></a> applies a function to each element of
 the iterator and returns <em>the element</em>.</p>
-<p>This can be useful e.g for logging errors before filtering them out.</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>def log_if_bad(egg):</dt>
-<dd><dl class="first last docutils">
-<dt>if egg.is_bad():</dt>
-<dd>print(“bad egg will be removed”)</dd>
-<dt>else:</dt>
-<dd>pass</dd>
-</dl>
-</dd>
-</dl>
-<p>my_iter            .map(lambda x: some_operation(x))            .inspect(lambda e: log_if_bad(e))            .filter(lambda e: not e.is_bad())</p>
-</div></blockquote>
+<p>This can be useful e.g for logging errors before filtering them out:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">log_if_bad</span><span class="p">(</span><span class="n">egg</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">egg</span><span class="o">.</span><span class="n">is_bad</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;bad egg will be removed&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+<span class="n">my_iter</span>\
+<span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">some_operation</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>\
+<span class="o">.</span><span class="n">inspect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">log_if_bad</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>\
+<span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="ow">not</span> <span class="n">e</span><span class="o">.</span><span class="n">is_bad</span><span class="p">())</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="iterator.Iterator.last">
 <code class="descname">last</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.last"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.last" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the last item in the iterator. Return None if the iterator is empty.</p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the last item in the iterator.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#LookupError" title="(in Python v3.7)"><strong>LookupError</strong></a> – if the iterator is empty.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="iterator.Iterator.map">
 <code class="descname">map</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a stream of <cite>op</cite> applied to each element.</p>
+<dd><p>Applies the transformation <code class="docutils literal notranslate"><span class="pre">op</span></code> to each element of the iterator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>op</strong> (<em>fn</em><em>(</em><em>A</em><em>)</em><em>-&gt;B</em>) – the transformation to apply to each element of the iterator.</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">into_iter</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>\
+    <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>\
+    <span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+    
+<span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -266,14 +389,15 @@ If there are many minima, returns the first one.</p>
 
 <dl class="method">
 <dt id="iterator.Iterator.none">
-<code class="descname">none</code><span class="sig-paren">(</span><em>pred</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.none"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.none" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return true if none of the elements satisfy the predicate.</p>
+<code class="descname">none</code><span class="sig-paren">(</span><em>pred=&lt;function Iterator.&lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.none"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.none" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if none of the elements satisfy the predicate.
+Predicate defaults to the identity.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="iterator.Iterator.partition">
 <code class="descname">partition</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.partition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.partition" title="Permalink to this definition">¶</a></dt>
-<dd><p>Consume the iterater, splitting the elements into two lists based
+<dd><p>Consume the Iterator, splitting the elements into two lists based
 on whether or not they satisfy the predicate.</p>
 </dd></dl>
 
@@ -332,8 +456,19 @@ Raise StopIteration if the iterator is empty.</p>
 
 <dl class="method">
 <dt id="iterator.Iterator.zip">
-<code class="descname">zip</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.zip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.zip" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a stream of pairs from a pair of streams.</p>
+<code class="descname">zip</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iterator.html#Iterator.zip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#iterator.Iterator.zip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms a group of streams into a stream of groups, via the Python
+builtin.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">into_iter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">9</span><span class="p">)]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Unlike the Rust equivalent, this function can accept a variable
+number of arguments.</p>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -361,6 +496,7 @@ Raise StopIteration if the iterator is empty.</p>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">iterator</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#classes">Classes</a></li>
 </ul>
@@ -371,7 +507,7 @@ Raise StopIteration if the iterator is empty.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../index.html" title="previous chapter">Welcome to iterator’s documentation!</a></li>
+      <li>Previous: <a href="../index.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">iterator</span></code>: Rust-inspired iteration</a></li>
   </ul></li>
 </ul>
 </div>

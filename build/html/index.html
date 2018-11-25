@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Welcome to iterator’s documentation! &#8212; iterator 0.0.0 documentation</title>
+    <title>iterator: Rust-inspired iteration &#8212; iterator 0.0.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
@@ -33,26 +33,45 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-iterator-s-documentation">
-<h1>Welcome to iterator’s documentation!<a class="headerlink" href="#welcome-to-iterator-s-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="iterator-rust-inspired-iteration">
+<h1><code class="docutils literal notranslate"><span class="pre">iterator</span></code>: Rust-inspired iteration<a class="headerlink" href="#iterator-rust-inspired-iteration" title="Permalink to this headline">¶</a></h1>
+<p>This library provides the <a class="reference internal" href="iterator/iterator.html#iterator.Iterator" title="iterator.Iterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a> type, directly inspired by the
+<a class="reference external" href="https://doc.rust-lang.org/std/iter/index.html">trait</a> of the same name in Rust.</p>
+<p>The easiest way to use this is to use <a class="reference internal" href="iterator/iterator.html#iterator.into_iter" title="iterator.into_iter"><code class="xref py py-func docutils literal notranslate"><span class="pre">into_iter()</span></code></a>, which produces an
+<a class="reference internal" href="iterator/iterator.html#iterator.Iterator" title="iterator.Iterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a> from any iterable. Most of the methods provided by the
+Rust trait are present here too.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="iterator/iterator.html"><code class="docutils literal notranslate"><span class="pre">iterator</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="iterator/iterator.html#basic-usage">Basic usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="iterator/iterator.html#functions">Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="iterator/iterator.html#classes">Classes</a></li>
 </ul>
 </li>
 </ul>
 </div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Basic usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">iterator</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="n">into_iter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>You can use <a class="reference internal" href="iterator/iterator.html#iterator.Iterator" title="iterator.Iterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a> anywhere an iterable is expected:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">into_iter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">):</span>
+   <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
 <li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
 </ul>
+</div>
 </div>
 
 

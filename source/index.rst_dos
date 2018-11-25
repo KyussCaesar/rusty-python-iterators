@@ -1,0 +1,28 @@
+.. iterator documentation master file, created by
+   sphinx-quickstart on Sat Nov 24 17:28:47 2018.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+``iterator``: Rust-inspired lazy iteration
+==========================================
+
+This library provides the :class:`~iterator.Iterator` type, directly inspired by the 
+`trait <https://doc.rust-lang.org/std/iter/index.html>`_ of the same name in Rust.
+
+The easiest way to use this is to use :func:`~iterator.into_iter`, which produces an
+:class:`~iterator.Iterator` from any iterable. Most of the methods provided by the
+Rust trait are present here too.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   iterator.into_iter
+   iterator.Iterator
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

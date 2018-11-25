@@ -2,13 +2,68 @@
 A lazy iterator type inspired by Rust's iterator types.
 
 You can extend your own types to use this iterator interface by inheriting
-from the Iterator class and overriding the __next__ method.
+and overriding the __next__ method.
 
-You can also use the `into_iter` function, which accepts any Python iterable
+You can also use the ``into_iter`` function, which accepts any Python iterable
 and returns an Iterator.
+
+Basic usage
+-----------
+
+If you already have something that's iterable, use the ``into_iter`` function::
+
+    iter = into_iter([1, 2, 3])
+
+It accepts any kind of iterable, so all of the following will work::
+
+    iter = into_iter([x for x in xs]) # list comprehension
+    iter = into_iter(x for x in xs)   # generator expression
+    iter = into_iter(range(10))       # generator
+    iter = into_iter(my_list)         # list
+
+In order to collect the results back into a list, use :meth:`~iterator.Iterator.collect`::
+
+    assert into_iter([1, 2, 3]).collect() == [1, 2, 3]
+
+Iterator methods
+~~~~~~~~~~~~~~~~
+
+Perhaps the most used methods are :meth:`~iterator.Iterator.map` and
+:meth:`~iterator.Iterator.filter`. See below::
+
+    result = into_iter(range(5))\\
+    .map(lambda x: 2*x)\\
+    .filter(lambda x: x < 7)\\
+    .collect()
+
+    assert result == [2, 4, 6]
+
+:meth:`~iterator.Iterator.map` yields the result of applying the function to each
+element, and :meth:`~iterator.Iterator.filter` only yields items for which the
+function returns ``True``.
+
+There's also :meth:`~iterator.Iterator.collect` which collects the elements of the
+iterator into (by default) a list, but can also be provided with a function to
+collect into.
+
+For example, collecting into a dict::
+
+    result = into_iter("abc")\\
+        .zip(range(3))\\
+        .collect(dict)
+
+    assert result == {'a':0, 'b':1, 'c':2}
+
+Or::
+
+    with open("my_data.json") as f:
+        df = into_iter(json.load(f))\\
+            .map(some_operation)\\
+            .filter(stuff_wanted)\\
+            .collect(pandas.DataFrame)
+
 """
 
-from joblib import Parallel, delayed
 
 def into_iter(iterable):
     """Creates an Iterator from the iterable."""
@@ -24,22 +79,37 @@ def into_iter(iterable):
 
 
 class Iterator:
-    """A lazy iterator type inspired by Rust iterators."""
+    """
+    A lazy iterator type inspired by Rust iterators.
+
+    See the module-level documentation for more information.
+    """
+
+    def __init__(self):
+        pass
 
     def __iter__(self):
-        """Return self."""
         return self
 
     def __next__(self):
         """
         Return the next value in the iterator.
 
-        You should override this method; the default is to simply raise StopIteration.
+        .. note::
+            You should override this method for your type.
         """
         raise StopIteration
 
     def count(self):
-        """Consume the iterator, counting the number of iterations and returning it."""
+        """
+        Consume the iterator, counting the number of iterations and returning it.
+
+        :return: the number of items in the iterator.
+
+        .. note::
+            This function will not return if your iterator is infinite (e.g created
+            by :meth:`~iterator.Iterator.cycle` or a generator which never exits).
+        """
         counter = 0
         for i in self:
             counter += 1
@@ -47,15 +117,30 @@ class Iterator:
         return counter
 
     def last(self):
-        """Return the last item in the iterator. Return None if the iterator is empty."""
-        item = None
+        """
+        :return: the last item in the iterator.
+        :raises LookupError: if the iterator is empty.
+        """
+        item = []
         for i in self:
-            item = i
+            if not item:
+                item.append(i)
+            else:
+                item[0] = i
 
-        return item
+        if not item:
+            raise LookupError
+
+        return item[0]
 
     def filter(self, pred):
-        """Return a stream of values for which the predicate is true."""
+        """
+        Applies the predicate ``pred`` to each element in the iterator.
+
+        :param fn(A)->bool pred: a function which returns ``True`` if the item
+        should be kept.
+        :return: a stream of values for which the predicate is true.
+        """
 
         class Filter(Iterator):
             def __init__(self, wrapped, pred):
@@ -72,24 +157,43 @@ class Iterator:
         return Filter(self, pred)
 
     def flatten(self):
-        """Flatten nested structure."""
+        """
+        Transform an iterator of iterables into one long iterator.
+
+        Example::
+
+            assert into_iter([[1, 2], [3, 4]]).flatten().collect() == [1, 2, 3, 4]
+        """
 
         class Flatten(Iterator):
             def __init__(self, wrapped):
                 self.wrapped = wrapped
-                self.current = next(self.wrapped)
+                self.current = iter(next(self.wrapped))
 
             def __next__(self):
                 try:
                     return next(self.current)
                 except StopIteration:
-                    self.current = next(self.wrapped)
+                    self.current = iter(next(self.wrapped))
                     return next(self)
 
         return Flatten(self)
 
     def map(self, op):
-        """Return a stream of `op` applied to each element."""
+        """
+        Applies the transformation ``op`` to each element of the iterator.
+
+        :param fn(A)->B op: the transformation to apply to each element of the iterator.
+
+        Example::
+
+            result = into_iter([1, 2, 3])\\
+                .map(lambda x: 2*x)\\
+                .collect()
+                
+            assert result == [2, 4, 6]
+
+        """
 
         class Map(Iterator):
             def __init__(self, wrapped, op):
@@ -103,15 +207,30 @@ class Iterator:
 
     def flat_map(self, op):
         """
-        Where `op` returns a stream of items, apply `op` to each element
-        of the iterator and flatten the resulting nested structure.
+        Applies :meth:`map` followed by :meth:`flatten`.
         """
 
         return self.map(op).flatten()
 
     def filter_map(self, op):
         """
-        `op` should return `(bool, item)`. If bool is false, skips item.
+        :param func op: each element in the iterator will be passed to this function.
+        If the function raises :exception:`ValueError`, then the element will be
+        filtered out. Otherwise, yield the result of the function.
+
+        Example::
+
+            def my_op(x):
+                if x < 3:
+                    return 2*x
+                else:
+                    raise ValueError
+
+            result = into_iter(range(5))\\
+            .filter_map(my_op)\\
+            .collect()
+
+            assert result == [0, 2, 4]
         """
 
         class FilterMap(Iterator):
@@ -120,29 +239,42 @@ class Iterator:
                 self.op = op
 
             def __next__(self):
-                (p, item) = self.op(next(self.wrapped))
-                if p:
-                    return item
-                else:
+                try:
+                    return self.op(next(self.wrapped))
+                except ValueError:
                     return next(self)
 
         return FilterMap(self, op)
 
-    def zip(self, other):
-        """Return a stream of pairs from a pair of streams."""
+    def zip(self, *args):
+        """
+        Transforms a group of streams into a stream of groups, via the Python
+        builtin.
+
+        Example::
+
+            result = into_iter(range(5)).zip(range(5,10)).collect()
+            assert result == [(0,5), (1,6), (2,7), (3,8), (4,9)]
+
+        .. note::
+            Unlike the Rust equivalent, this function can accept a variable
+            number of arguments.
+        """
 
         class Zip(Iterator):
-            def __init__(self, wrapped, other):
-                self.wrapped = wrapped
-                self.other = other
+            def __init__(self, wrapped, *args):
+                self.wrapped = zip(wrapped, *args)
 
             def __next__(self):
-                return (next(self.wrapped), next(self.other))
+                return next(self.wrapped)
 
-        return Zip(self, other)
+        return Zip(self, *args)
 
     def chain(self, other):
-        """Return a stream of values from `self`, then from `other`."""
+        """
+        When the elements in the iterator are exhausted, starts yielding elements
+        from ``other``, chaining them together.
+        """
 
         class Chain(Iterator):
             def __init__(self, wrapped, other):
@@ -247,19 +379,19 @@ class Iterator:
     def inspect(self, op):
         """
         Do something with each element of an iterator. Different to `map`; `map`
-        essentially does
+        essentially does::
 
             [ f(x) for x in xs ]
 
-        Compare to this method, which essentially does
+        Compare to this method, which essentially does::
 
             [ (f(x), x)[1] for x in xs ]
 
-        In other words, `map` applies a function to each element of the iterator
-        and returns the *result*, `inspect` applies a function to each element of
+        In other words, :meth:`map` applies a function to each element of the iterator
+        and returns the *result*, :meth:`inspect` applies a function to each element of
         the iterator and returns *the element*.
 
-        This can be useful e.g for logging errors before filtering them out.
+        This can be useful e.g for logging errors before filtering them out::
 
             def log_if_bad(egg):
                 if egg.is_bad():
@@ -267,9 +399,9 @@ class Iterator:
                 else:
                     pass
 
-            my_iter\
-            .map(lambda x: some_operation(x))\
-            .inspect(lambda e: log_if_bad(e))\
+            my_iter\\
+            .map(lambda x: some_operation(x))\\
+            .inspect(lambda e: log_if_bad(e))\\
             .filter(lambda e: not e.is_bad())
 
         """
@@ -288,7 +420,7 @@ class Iterator:
 
     def partition(self, op):
         """
-        Consume the iterater, splitting the elements into two lists based
+        Consume the Iterator, splitting the elements into two lists based
         on whether or not they satisfy the predicate.
         """
 
@@ -328,22 +460,31 @@ class Iterator:
 
         return state
 
-    def all(self, pred):
-        """Return true if all elements satisfy the predicate."""
+    def all(self, pred=lambda x: x):
+        """
+        Return true if all elements satisfy the predicate.
+        Predicate defaults to the identity.
+        """
         for item in self.wrapped:
             if not pred(item):
                 return false
         return true
 
-    def any(self, pred):
-        """Return true if any of the elements satisfy the predicate."""
+    def any(self, pred=lambda x: x):
+        """
+        Return true if any of the elements satisfy the predicate.
+        Predicate defaults to the identity.
+        """
         for item in self.wrapped:
             if pred(item):
                 return true
         return false
 
-    def none(self, pred):
-        """Return true if none of the elements satisfy the predicate."""
+    def none(self, pred=lambda x: x):
+        """
+        Return true if none of the elements satisfy the predicate.
+        Predicate defaults to the identity.
+        """
         for item in self.wrapped:
             if pred(item):
                 return false
@@ -384,7 +525,6 @@ class Iterator:
         for i in self:
             if i > item:
                 item = i
-
         return item
 
     def min(self):
@@ -396,7 +536,6 @@ class Iterator:
         for i in self:
             if i < item:
                 item = i
-
         return item
 
     def max_by_score(self, score):
@@ -425,7 +564,6 @@ class Iterator:
         for i in self:
             if comp(i, item):
                 item = i
-
         return item
 
     def min_by(self, comp):
@@ -500,19 +638,21 @@ class Iterator:
 
     def collect(self, collector=lambda xs: [x for x in xs]):
         """
-        Use collector to collect the elements of the iterator.
+        Use ``collector`` to collect the elements of the iterator. Defaults to a
+        list.
+
         It can be useful to pass a constructor here, to create a
         collection out of the iterator.
 
-        Examples:
+        Examples::
         
             `iter.collect(lambda xs: [x for x in xs])`
         
-        to collect the results into a list
+        to collect the results into a list::
 
             `iter.collect(lambda xs: { x[0] : x[1] for x in xs })`
 
-        to collect stream of pairs into dictionary.
+        to collect stream of pairs into dictionary::
 
             class MyList:
                 def __init__(self, stream):
@@ -525,15 +665,5 @@ class Iterator:
 
         return collector(self)
 
-    def par_collect(self):
-        """
-        Use `joblib` to collect the results into a list in parallel.
 
-        Note that this is done by spawning a number of Python subprocesses, so
-        unless you have quite a bit of computation to do, this might actually
-        be slower.
-        """
-        return Parallel(n_jobs=-1)(delayed(lambda x: x)(i) for i in self)
-
-
-__all__ = [ "iterator", "Iterator", "into_iter"]
+__all__ = ["iterator", "Iterator", "into_iter"]

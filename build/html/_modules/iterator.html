@@ -37,10 +37,66 @@
 <span class="sd">A lazy iterator type inspired by Rust&#39;s iterator types.</span>
 
 <span class="sd">You can extend your own types to use this iterator interface by inheriting</span>
-<span class="sd">from the Iterator class and overriding the __next__ method.</span>
+<span class="sd">and overriding the __next__ method.</span>
 
-<span class="sd">You can also use the `into_iter` function, which accepts any Python iterable</span>
+<span class="sd">You can also use the ``into_iter`` function, which accepts any Python iterable</span>
 <span class="sd">and returns an Iterator.</span>
+
+<span class="sd">Basic usage</span>
+<span class="sd">-----------</span>
+
+<span class="sd">If you already have something that&#39;s iterable, use the ``into_iter`` function::</span>
+
+<span class="sd">    iter = into_iter([1, 2, 3])</span>
+
+<span class="sd">It accepts any kind of iterable, so all of the following will work::</span>
+
+<span class="sd">    iter = into_iter([x for x in xs]) # list comprehension</span>
+<span class="sd">    iter = into_iter(x for x in xs)   # generator expression</span>
+<span class="sd">    iter = into_iter(range(10))       # generator</span>
+<span class="sd">    iter = into_iter(my_list)         # list</span>
+
+<span class="sd">In order to collect the results back into a list, use :meth:`~iterator.Iterator.collect`::</span>
+
+<span class="sd">    assert into_iter([1, 2, 3]).collect() == [1, 2, 3]</span>
+
+<span class="sd">Iterator methods</span>
+<span class="sd">~~~~~~~~~~~~~~~~</span>
+
+<span class="sd">Perhaps the most used methods are :meth:`~iterator.Iterator.map` and</span>
+<span class="sd">:meth:`~iterator.Iterator.filter`. See below::</span>
+
+<span class="sd">    result = into_iter(range(5))\\</span>
+<span class="sd">    .map(lambda x: 2*x)\\</span>
+<span class="sd">    .filter(lambda x: x &lt; 7)\\</span>
+<span class="sd">    .collect()</span>
+
+<span class="sd">    assert result == [2, 4, 6]</span>
+
+<span class="sd">:meth:`~iterator.Iterator.map` yields the result of applying the function to each</span>
+<span class="sd">element, and :meth:`~iterator.Iterator.filter` only yields items for which the</span>
+<span class="sd">function returns ``True``.</span>
+
+<span class="sd">There&#39;s also :meth:`~iterator.Iterator.collect` which collects the elements of the</span>
+<span class="sd">iterator into (by default) a list, but can also be provided with a function to</span>
+<span class="sd">collect into.</span>
+
+<span class="sd">For example, collecting into a dict::</span>
+
+<span class="sd">    result = into_iter(&quot;abc&quot;)\\</span>
+<span class="sd">        .zip(range(3))\\</span>
+<span class="sd">        .collect(dict)</span>
+
+<span class="sd">    assert result == {&#39;a&#39;:0, &#39;b&#39;:1, &#39;c&#39;:2}</span>
+
+<span class="sd">Or::</span>
+
+<span class="sd">    with open(&quot;my_data.json&quot;) as f:</span>
+<span class="sd">        df = into_iter(json.load(f))\\</span>
+<span class="sd">            .map(some_operation)\\</span>
+<span class="sd">            .filter(stuff_wanted)\\</span>
+<span class="sd">            .collect(pandas.DataFrame)</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 
@@ -58,22 +114,37 @@
 
 
 <div class="viewcode-block" id="Iterator"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator">[docs]</a><span class="k">class</span> <span class="nc">Iterator</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;A lazy iterator type inspired by Rust iterators.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A lazy iterator type inspired by Rust iterators.</span>
+
+<span class="sd">    See the module-level documentation for more information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return self.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the next value in the iterator.</span>
 
-<span class="sd">        You should override this method; the default is to simply raise StopIteration.</span>
+<span class="sd">        .. note::</span>
+<span class="sd">            You should override this method for your type.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">StopIteration</span>
 
 <div class="viewcode-block" id="Iterator.count"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.count">[docs]</a>    <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Consume the iterator, counting the number of iterations and returning it.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Consume the iterator, counting the number of iterations and returning it.</span>
+
+<span class="sd">        :return: the number of items in the iterator.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            This function will not return if your iterator is infinite (e.g created</span>
+<span class="sd">            by :meth:`~iterator.Iterator.cycle` or a generator which never exits).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -81,15 +152,30 @@
         <span class="k">return</span> <span class="n">counter</span></div>
 
 <div class="viewcode-block" id="Iterator.last"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.last">[docs]</a>    <span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the last item in the iterator. Return None if the iterator is empty.&quot;&quot;&quot;</span>
-        <span class="n">item</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: the last item in the iterator.</span>
+<span class="sd">        :raises LookupError: if the iterator is empty.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="n">item</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
 
-        <span class="k">return</span> <span class="n">item</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">LookupError</span>
+
+        <span class="k">return</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Iterator.filter"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.filter">[docs]</a>    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a stream of values for which the predicate is true.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies the predicate ``pred`` to each element in the iterator.</span>
+
+<span class="sd">        :param fn(A)-&gt;bool pred: a function which returns ``True`` if the item</span>
+<span class="sd">        should be kept.</span>
+<span class="sd">        :return: a stream of values for which the predicate is true.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">class</span> <span class="nc">Filter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">):</span>
             <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wrapped</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
@@ -106,24 +192,43 @@
         <span class="k">return</span> <span class="n">Filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Iterator.flatten"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.flatten">[docs]</a>    <span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Flatten nested structure.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform an iterator of iterables into one long iterator.</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            assert into_iter([[1, 2], [3, 4]]).flatten().collect() == [1, 2, 3, 4]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">class</span> <span class="nc">Flatten</span><span class="p">(</span><span class="n">Iterator</span><span class="p">):</span>
             <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wrapped</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span> <span class="o">=</span> <span class="n">wrapped</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span><span class="p">))</span>
 
             <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span><span class="p">))</span>
                     <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">Flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Iterator.map"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a stream of `op` applied to each element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies the transformation ``op`` to each element of the iterator.</span>
+
+<span class="sd">        :param fn(A)-&gt;B op: the transformation to apply to each element of the iterator.</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            result = into_iter([1, 2, 3])\\</span>
+<span class="sd">                .map(lambda x: 2*x)\\</span>
+<span class="sd">                .collect()</span>
+<span class="sd">                </span>
+<span class="sd">            assert result == [2, 4, 6]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">class</span> <span class="nc">Map</span><span class="p">(</span><span class="n">Iterator</span><span class="p">):</span>
             <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wrapped</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
@@ -137,15 +242,30 @@
 
 <div class="viewcode-block" id="Iterator.flat_map"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.flat_map">[docs]</a>    <span class="k">def</span> <span class="nf">flat_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Where `op` returns a stream of items, apply `op` to each element</span>
-<span class="sd">        of the iterator and flatten the resulting nested structure.</span>
+<span class="sd">        Applies :meth:`map` followed by :meth:`flatten`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">op</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Iterator.filter_map"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.filter_map">[docs]</a>    <span class="k">def</span> <span class="nf">filter_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        `op` should return `(bool, item)`. If bool is false, skips item.</span>
+<span class="sd">        :param func op: each element in the iterator will be passed to this function.</span>
+<span class="sd">        If the function raises :exception:`ValueError`, then the element will be</span>
+<span class="sd">        filtered out. Otherwise, yield the result of the function.</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            def my_op(x):</span>
+<span class="sd">                if x &lt; 3:</span>
+<span class="sd">                    return 2*x</span>
+<span class="sd">                else:</span>
+<span class="sd">                    raise ValueError</span>
+
+<span class="sd">            result = into_iter(range(5))\\</span>
+<span class="sd">            .filter_map(my_op)\\</span>
+<span class="sd">            .collect()</span>
+
+<span class="sd">            assert result == [0, 2, 4]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">class</span> <span class="nc">FilterMap</span><span class="p">(</span><span class="n">Iterator</span><span class="p">):</span>
@@ -154,29 +274,42 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">op</span> <span class="o">=</span> <span class="n">op</span>
 
             <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-                <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span><span class="p">))</span>
-                <span class="k">if</span> <span class="n">p</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">item</span>
-                <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">FilterMap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Iterator.zip"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.zip">[docs]</a>    <span class="k">def</span> <span class="nf">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a stream of pairs from a pair of streams.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Iterator.zip"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.zip">[docs]</a>    <span class="k">def</span> <span class="nf">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transforms a group of streams into a stream of groups, via the Python</span>
+<span class="sd">        builtin.</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            result = into_iter(range(5)).zip(range(5,10)).collect()</span>
+<span class="sd">            assert result == [(0,5), (1,6), (2,7), (3,8), (4,9)]</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Unlike the Rust equivalent, this function can accept a variable</span>
+<span class="sd">            number of arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">class</span> <span class="nc">Zip</span><span class="p">(</span><span class="n">Iterator</span><span class="p">):</span>
-            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wrapped</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span> <span class="o">=</span> <span class="n">wrapped</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">other</span> <span class="o">=</span> <span class="n">other</span>
+            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wrapped</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">wrapped</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
             <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-                <span class="k">return</span> <span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span><span class="p">),</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">other</span><span class="p">))</span>
+                <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">Zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">Zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Iterator.chain"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.chain">[docs]</a>    <span class="k">def</span> <span class="nf">chain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a stream of values from `self`, then from `other`.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When the elements in the iterator are exhausted, starts yielding elements</span>
+<span class="sd">        from ``other``, chaining them together.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">class</span> <span class="nc">Chain</span><span class="p">(</span><span class="n">Iterator</span><span class="p">):</span>
             <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wrapped</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -281,19 +414,19 @@
 <div class="viewcode-block" id="Iterator.inspect"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.inspect">[docs]</a>    <span class="k">def</span> <span class="nf">inspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do something with each element of an iterator. Different to `map`; `map`</span>
-<span class="sd">        essentially does</span>
+<span class="sd">        essentially does::</span>
 
 <span class="sd">            [ f(x) for x in xs ]</span>
 
-<span class="sd">        Compare to this method, which essentially does</span>
+<span class="sd">        Compare to this method, which essentially does::</span>
 
 <span class="sd">            [ (f(x), x)[1] for x in xs ]</span>
 
-<span class="sd">        In other words, `map` applies a function to each element of the iterator</span>
-<span class="sd">        and returns the *result*, `inspect` applies a function to each element of</span>
+<span class="sd">        In other words, :meth:`map` applies a function to each element of the iterator</span>
+<span class="sd">        and returns the *result*, :meth:`inspect` applies a function to each element of</span>
 <span class="sd">        the iterator and returns *the element*.</span>
 
-<span class="sd">        This can be useful e.g for logging errors before filtering them out.</span>
+<span class="sd">        This can be useful e.g for logging errors before filtering them out::</span>
 
 <span class="sd">            def log_if_bad(egg):</span>
 <span class="sd">                if egg.is_bad():</span>
@@ -301,9 +434,9 @@
 <span class="sd">                else:</span>
 <span class="sd">                    pass</span>
 
-<span class="sd">            my_iter\</span>
-<span class="sd">            .map(lambda x: some_operation(x))\</span>
-<span class="sd">            .inspect(lambda e: log_if_bad(e))\</span>
+<span class="sd">            my_iter\\</span>
+<span class="sd">            .map(lambda x: some_operation(x))\\</span>
+<span class="sd">            .inspect(lambda e: log_if_bad(e))\\</span>
 <span class="sd">            .filter(lambda e: not e.is_bad())</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -322,7 +455,7 @@
 
 <div class="viewcode-block" id="Iterator.partition"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.partition">[docs]</a>    <span class="k">def</span> <span class="nf">partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Consume the iterater, splitting the elements into two lists based</span>
+<span class="sd">        Consume the Iterator, splitting the elements into two lists based</span>
 <span class="sd">        on whether or not they satisfy the predicate.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -362,22 +495,31 @@
 
         <span class="k">return</span> <span class="n">state</span></div>
 
-<div class="viewcode-block" id="Iterator.all"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return true if all elements satisfy the predicate.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Iterator.all"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return true if all elements satisfy the predicate.</span>
+<span class="sd">        Predicate defaults to the identity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">pred</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">false</span>
         <span class="k">return</span> <span class="n">true</span></div>
 
-<div class="viewcode-block" id="Iterator.any"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.any">[docs]</a>    <span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return true if any of the elements satisfy the predicate.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Iterator.any"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.any">[docs]</a>    <span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return true if any of the elements satisfy the predicate.</span>
+<span class="sd">        Predicate defaults to the identity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">pred</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">true</span>
         <span class="k">return</span> <span class="n">false</span></div>
 
-<div class="viewcode-block" id="Iterator.none"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.none">[docs]</a>    <span class="k">def</span> <span class="nf">none</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return true if none of the elements satisfy the predicate.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Iterator.none"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.none">[docs]</a>    <span class="k">def</span> <span class="nf">none</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return true if none of the elements satisfy the predicate.</span>
+<span class="sd">        Predicate defaults to the identity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">pred</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">false</span>
@@ -418,7 +560,6 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">item</span><span class="p">:</span>
                 <span class="n">item</span> <span class="o">=</span> <span class="n">i</span>
-
         <span class="k">return</span> <span class="n">item</span></div>
 
 <div class="viewcode-block" id="Iterator.min"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.min">[docs]</a>    <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -430,7 +571,6 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">item</span><span class="p">:</span>
                 <span class="n">item</span> <span class="o">=</span> <span class="n">i</span>
-
         <span class="k">return</span> <span class="n">item</span></div>
 
 <div class="viewcode-block" id="Iterator.max_by_score"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.max_by_score">[docs]</a>    <span class="k">def</span> <span class="nf">max_by_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score</span><span class="p">):</span>
@@ -459,7 +599,6 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">comp</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
                 <span class="n">item</span> <span class="o">=</span> <span class="n">i</span>
-
         <span class="k">return</span> <span class="n">item</span></div>
 
 <div class="viewcode-block" id="Iterator.min_by"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.min_by">[docs]</a>    <span class="k">def</span> <span class="nf">min_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comp</span><span class="p">):</span>
@@ -532,21 +671,23 @@
             <span class="n">acc</span> <span class="o">*=</span> <span class="n">item</span>
         <span class="k">return</span> <span class="n">acc</span></div>
 
-<div class="viewcode-block" id="Iterator.collect"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.collect">[docs]</a>    <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collector</span><span class="p">):</span>
+<div class="viewcode-block" id="Iterator.collect"><a class="viewcode-back" href="../iterator/iterator.html#iterator.Iterator.collect">[docs]</a>    <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collector</span><span class="o">=</span><span class="k">lambda</span> <span class="n">xs</span><span class="p">:</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xs</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Use collector to collect the elements of the iterator.</span>
+<span class="sd">        Use ``collector`` to collect the elements of the iterator. Defaults to a</span>
+<span class="sd">        list.</span>
+
 <span class="sd">        It can be useful to pass a constructor here, to create a</span>
 <span class="sd">        collection out of the iterator.</span>
 
-<span class="sd">        Examples:</span>
+<span class="sd">        Examples::</span>
 <span class="sd">        </span>
 <span class="sd">            `iter.collect(lambda xs: [x for x in xs])`</span>
 <span class="sd">        </span>
-<span class="sd">        to collect the results into a list</span>
+<span class="sd">        to collect the results into a list::</span>
 
 <span class="sd">            `iter.collect(lambda xs: { x[0] : x[1] for x in xs })`</span>
 
-<span class="sd">        to collect stream of pairs into dictionary.</span>
+<span class="sd">        to collect stream of pairs into dictionary::</span>
 
 <span class="sd">            class MyList:</span>
 <span class="sd">                def __init__(self, stream):</span>
@@ -560,7 +701,7 @@
         <span class="k">return</span> <span class="n">collector</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;iterator&quot;</span><span class="p">,</span> <span class="s2">&quot;Iterator&quot;</span><span class="p">,</span> <span class="s2">&quot;into_iter&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;iterator&quot;</span><span class="p">,</span> <span class="s2">&quot;Iterator&quot;</span><span class="p">,</span> <span class="s2">&quot;into_iter&quot;</span><span class="p">]</span>
 </pre></div>
 
           </div>
